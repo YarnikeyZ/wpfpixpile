@@ -1,0 +1,21 @@
+﻿<Window x:Name="MainWindowWindow" x:Class="wpfpixpile.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpfpixpile"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="360" Width="640" Background="#FF191919" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Foreground="White">
+    <Grid>
+        <Label x:Name="button_pong" Content="Pong: 2 players" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" Width="94" Cursor="Hand" BorderBrush="White" BorderThickness="2,2,2,2" MouseUp="button_pong_MouseUp">
+            <Label.Background>
+                <SolidColorBrush Color="Black" Opacity="0"/>
+            </Label.Background>
+        </Label>
+        <Label x:Name="button_test" Content="???" HorizontalAlignment="Left" Margin="581,283,0,0" VerticalAlignment="Top" Foreground="White" Width="30" Cursor="Hand" BorderBrush="White" BorderThickness="2,2,2,2" MouseUp="button_test_MouseUp" Height="30">
+            <Label.Background>
+                <SolidColorBrush Color="Black" Opacity="0"/>
+            </Label.Background>
+        </Label>
+    </Grid>
+</Window>
