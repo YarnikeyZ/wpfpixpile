@@ -31,3 +31,10 @@
 * **UpdateCalculations** -  a looping function that is supposed to be used for running your CalculationFunc (function that calculates one frame);
 
 * **Setup** -  is a function that gets everything ready for starting to calculate and render;
+
+# Included Examples
+* **Pong** - literally just pong for two players (image 1);
+
+* **Shark3D** - 3D model inspecting demo, can load objects from .obj files (image 2);
+
+* **CsSysStat** - shows the CPU time with default WPF progress bar and a graph on a bottom (image 3);
