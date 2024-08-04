@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:wpfpixpile"
         mc:Ignorable="d"
         Title="PongWindow" Height="360" Width="640" Background="Black" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize" Loaded="PongWindowWindowLoaded">
-    <Grid/>
+    <Grid>
+        <Image x:Name="Frame" HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Stretch" Width="Auto" Source="/blank.png" Stretch="Fill"/> 
+    </Grid>
 </Window>
 
 

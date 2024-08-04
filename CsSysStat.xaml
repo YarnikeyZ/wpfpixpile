@@ -1,0 +1,14 @@
+﻿<Window x:Name="CsSysStatWindowWindow" x:Class="wpfpixpile.CsSysStatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpfpixpile"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800" WindowStyle="ThreeDBorderWindow" Background="Black" Loaded="CsSysStatWindowWindowLoaded">
+    <Grid>
+        <ProgressBar x:Name="pb_cpu" HorizontalAlignment="Left" Height="44" Margin="143,10,0,0" VerticalAlignment="Top" Width="629"/>
+        <Label x:Name="l_cpu" Content="CPU:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="128" Foreground="White" Background="#0C000000" FontSize="24" Height="44"/>
+        <Image x:Name="Frame" HorizontalAlignment="Left" Height="332" Margin="10,62,0,0" VerticalAlignment="Top" Width="762" Source="/blank.png" Stretch="Fill"/>
+    </Grid>
+</Window>

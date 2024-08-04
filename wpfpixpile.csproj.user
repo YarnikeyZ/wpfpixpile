@@ -13,7 +13,10 @@
     <Compile Update="pong.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="test.xaml.cs">
+    <Compile Update="shark3D.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="CsSysStat.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -24,7 +27,10 @@
     <Page Update="pong.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="test.xaml">
+    <Page Update="shark3D.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="CsSysStat.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

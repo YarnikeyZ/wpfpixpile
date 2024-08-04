@@ -12,7 +12,12 @@
                 <SolidColorBrush Color="Black" Opacity="0"/>
             </Label.Background>
         </Label>
-        <Label x:Name="button_test" Content="???" HorizontalAlignment="Left" Margin="581,283,0,0" VerticalAlignment="Top" Foreground="White" Width="30" Cursor="Hand" BorderBrush="White" BorderThickness="2,2,2,2" MouseUp="button_test_MouseUp" Height="30">
+        <Label x:Name="button_shark3d" Content="Shark3D: 3D Renderer" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Foreground="White" Width="131" Cursor="Hand" BorderBrush="White" BorderThickness="2,2,2,2" MouseUp="button_shark3d_MouseUp" Height="30">
+            <Label.Background>
+                <SolidColorBrush Color="Black" Opacity="0"/>
+            </Label.Background>
+        </Label>
+        <Label x:Name="button_cssysstat" Content="CsSysStat" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Foreground="White" Width="66" Cursor="Hand" BorderBrush="White" BorderThickness="2,2,2,2" MouseUp="button_cssysstat_MouseUp" Height="30">
             <Label.Background>
                 <SolidColorBrush Color="Black" Opacity="0"/>
             </Label.Background>

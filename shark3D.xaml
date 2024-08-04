@@ -1,0 +1,12 @@
+﻿<Window x:Name="Shark3dWindowWindow" x:Class="wpfpixpile.Shark3dWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpfpixpile"
+        mc:Ignorable="d"
+        Title="Shark3dWindow" Width="640" Height="360" Background="Black" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="NoResize" Loaded="Shark3dWindowWindowLoaded">
+    <Grid>
+        <Image x:Name="Frame" HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Stretch" Width="Auto" Source="/blank.png" Stretch="Fill"/>
+    </Grid>
+</Window>

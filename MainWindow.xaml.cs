@@ -25,11 +25,18 @@ namespace wpfpixpile
             pong.Show();
         }
 
-        private void button_test_MouseUp(object sender, MouseButtonEventArgs e)
+        private void button_shark3d_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            TestWindow test = new TestWindow();
-            test.Owner = this;
-            test.Show();
+            Shark3dWindow shark3d = new Shark3dWindow();
+            shark3d.Owner = this;
+            shark3d.Show();
+        }
+
+        private void button_cssysstat_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            CsSysStatWindow cssysstat = new CsSysStatWindow();
+            cssysstat.Owner = this;
+            cssysstat.Show();
         }
     }
 }

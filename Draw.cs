@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using System.Numerics;
+using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static System.Math;
@@ -10,6 +12,78 @@ namespace wpfpixpile
 {
     public class Draw
     {
+        // Engine variables
+        public static WriteableBitmap wb = new WriteableBitmap(1, 1, 96, 96, PixelFormats.Bgr32, null);
+
+        public static int fps = 60;
+        public static int cfps = 20;
+
+        public static bool runBool = true;
+        public static bool frameDone = false;
+        public static bool pauseBool = false;
+        public static bool drawTakeScreenshot = false;
+        public static bool fullScreen = false;
+
+        public static int FrameWidth = 0;
+        public static int FrameHeight = 0;
+        public static double FrameAspect = 0;
+
+        public static string pathToScreenshots = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Screenshots\\";
+
+        // Engine work
+        public static void Setup(Image ImageElement)
+        {
+            RenderOptions.SetBitmapScalingMode(ImageElement, BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetEdgeMode(ImageElement, EdgeMode.Aliased);
+            wb = new WriteableBitmap(
+                (int)ImageElement.ActualWidth, (int)ImageElement.ActualHeight,
+                96, 96, PixelFormats.Bgr32, null
+            );
+            ImageElement.Source = wb;
+            FrameWidth = (int)ImageElement.ActualWidth;
+            FrameHeight = (int)ImageElement.ActualHeight;
+            FrameAspect = (int)ImageElement.ActualWidth / (int)ImageElement.ActualHeight;
+            runBool = true;
+        }
+
+        public static void UpdateCalculations(Action CalculationFunc)
+        {
+            while (runBool)
+            {
+                if (!frameDone && !pauseBool)
+                {
+                    CalculationFunc();
+
+                    frameDone = true;
+                    Thread.Sleep(1000 / cfps);
+                }
+                else { Thread.Sleep(1000 / cfps); }
+
+            }
+        }
+
+        public static async Task RenderLoop(Action RenderFunc)
+        {
+            while (runBool)
+            {
+                if (frameDone && !pauseBool)
+                {
+                    RenderFunc();
+
+                    if (drawTakeScreenshot)
+                    {
+                        TakeScreenshot($"{pathToScreenshots}screenshot_{DateTime.Now.ToString().Replace(" ", "_").Replace(".", "_").Replace(":", "_")}.png", wb.Clone());
+                        drawTakeScreenshot = false;
+                    }
+
+                    frameDone = false;
+                    await Task.Delay(1000 / fps);
+                }
+                else { await Task.Delay(1000 / fps); }
+            }
+        }
+
+        // Rendering
         public static Color MakeColorGradient(double frequency, int phase, double i)
         {
             return Color.FromRgb(
@@ -21,13 +95,13 @@ namespace wpfpixpile
 
         public static void DrawPixel(WriteableBitmap wb, Point p, Color clr, bool d3 = false)
         {
-            if (d3) { p.X += wb.PixelWidth / 2; p.Y = -(p.Y - wb.PixelHeight / 2); }
-            if (p.X < 0 || p.X >= wb.PixelWidth || p.Y < 0 || p.Y >= wb.PixelHeight) { return; }
+            if (d3) { p.X += FrameWidth / 2; p.Y = -(p.Y - FrameHeight / 2); }
+            if (p.X < 0 || p.X >= FrameWidth || p.Y < 0 || p.Y >= FrameHeight) { return; }
 
             wb.WritePixels(
                 new Int32Rect((int)p.X, (int)p.Y, 1, 1),
                 (byte[])[clr.B, clr.G, clr.R, 255],
-                wb.PixelWidth * wb.Format.BitsPerPixel / 8,
+                FrameWidth * wb.Format.BitsPerPixel / 8,
                 0
             );
         }
@@ -36,21 +110,21 @@ namespace wpfpixpile
         {
             if (rect.Width != 0 && rect.Height != 0)
             {
-                if (d3) { rect.X += wb.PixelWidth / 2; rect.Y = -(rect.Y - wb.PixelHeight / 2); }
+                if (d3) { rect.X += FrameWidth / 2; rect.Y = -(rect.Y - FrameHeight / 2); }
 
                 Int32Rect orig = new Int32Rect(rect.X, rect.Y, rect.Width, rect.Height);
 
                 while (
-                    rect.X < 0 || rect.X > wb.PixelWidth || rect.Y < 0 || rect.Y > wb.PixelHeight ||
-                    rect.X + rect.Width > wb.PixelWidth || rect.Y + rect.Height > wb.PixelHeight
+                    rect.X < 0 || rect.X > FrameWidth || rect.Y < 0 || rect.Y > FrameHeight ||
+                    rect.X + rect.Width > FrameWidth || rect.Y + rect.Height > FrameHeight
                 )
                 {
                     if (rect.X < 0 && rect.Width > 0) { rect.X++; rect.Width--; }
-                    if (rect.X + rect.Width > wb.PixelWidth && rect.Width > 0) { rect.Width--; }
+                    if (rect.X + rect.Width > FrameWidth && rect.Width > 0) { rect.Width--; }
                     if (rect.Width == 0) { break; }
 
                     if (rect.Y < 0 && rect.Height > 0) { rect.Y++; rect.Height--; }
-                    if (rect.Y + rect.Height > wb.PixelHeight && rect.Height > 0) { rect.Height--; }
+                    if (rect.Y + rect.Height > FrameHeight && rect.Height > 0) { rect.Height--; }
                     if (rect.Height == 0) { break; }
                 };
 
@@ -228,6 +302,158 @@ namespace wpfpixpile
                     }*/
                 }
             }
+        }
+
+        public class PColors()
+        {
+            public static Color AliceBlue = Color.FromRgb(240,248,255);
+            public static Color AntiqueWhite = Color.FromRgb(250,235,215);
+            public static Color Aqua = Color.FromRgb(0,255,255);
+            public static Color Aquamarine = Color.FromRgb(127,255,212);
+            public static Color Azure = Color.FromRgb(240,255,255);
+            public static Color Beige = Color.FromRgb(245,245,220);
+            public static Color Bisque = Color.FromRgb(255,228,196);
+            public static Color Black = Color.FromRgb(0,0,0);
+            public static Color BlanchedAlmond = Color.FromRgb(255,235,205);
+            public static Color Blue = Color.FromRgb(0,0,255);
+            public static Color BlueViolet = Color.FromRgb(138,43,226);
+            public static Color Brown = Color.FromRgb(165,42,42);
+            public static Color BurlyWood = Color.FromRgb(222,184,135);
+            public static Color CadetBlue = Color.FromRgb(95,158,160);
+            public static Color Chartreuse = Color.FromRgb(127,255,0);
+            public static Color Chocolate = Color.FromRgb(210,105,30);
+            public static Color Coral = Color.FromRgb(255,127,80);
+            public static Color CornflowerBlue = Color.FromRgb(100,149,237);
+            public static Color Cornsilk = Color.FromRgb(255,248,220);
+            public static Color Crimson = Color.FromRgb(220,20,60);
+            public static Color Cyan = Color.FromRgb(0,255,255);
+            public static Color DarkBlue = Color.FromRgb(0,0,139);
+            public static Color DarkCyan = Color.FromRgb(0,139,139);
+            public static Color DarkGoldenRod = Color.FromRgb(184,134,11);
+            public static Color DarkGray = Color.FromRgb(169,169,169);
+            public static Color DarkGrey = Color.FromRgb(169,169,169);
+            public static Color DarkGreen = Color.FromRgb(0,100,0);
+            public static Color DarkKhaki = Color.FromRgb(189,183,107);
+            public static Color DarkMagenta = Color.FromRgb(139,0,139);
+            public static Color DarkOliveGreen = Color.FromRgb(85,107,47);
+            public static Color DarkOrange = Color.FromRgb(255,140,0);
+            public static Color DarkOrchid = Color.FromRgb(153,50,204);
+            public static Color DarkRed = Color.FromRgb(139,0,0);
+            public static Color DarkSalmon = Color.FromRgb(233,150,122);
+            public static Color DarkSeaGreen = Color.FromRgb(143,188,143);
+            public static Color DarkSlateBlue = Color.FromRgb(72,61,139);
+            public static Color DarkSlateGray = Color.FromRgb(47,79,79);
+            public static Color DarkSlateGrey = Color.FromRgb(47,79,79);
+            public static Color DarkTurquoise = Color.FromRgb(0,206,209);
+            public static Color DarkViolet = Color.FromRgb(148,0,211);
+            public static Color DeepPink = Color.FromRgb(255,20,147);
+            public static Color DeepSkyBlue = Color.FromRgb(0,191,255);
+            public static Color DimGray = Color.FromRgb(105,105,105);
+            public static Color DimGrey = Color.FromRgb(105,105,105);
+            public static Color DodgerBlue = Color.FromRgb(30,144,255);
+            public static Color FireBrick = Color.FromRgb(178,34,34);
+            public static Color FloralWhite = Color.FromRgb(255,250,240);
+            public static Color ForestGreen = Color.FromRgb(34,139,34);
+            public static Color Fuchsia = Color.FromRgb(255,0,255);
+            public static Color Gainsboro = Color.FromRgb(220,220,220);
+            public static Color GhostWhite = Color.FromRgb(248,248,255);
+            public static Color Gold = Color.FromRgb(255,215,0);
+            public static Color GoldenRod = Color.FromRgb(218,165,32);
+            public static Color Gray = Color.FromRgb(128,128,128);
+            public static Color Grey = Color.FromRgb(128,128,128);
+            public static Color Green = Color.FromRgb(0,128,0);
+            public static Color GreenYellow = Color.FromRgb(173,255,47);
+            public static Color HoneyDew = Color.FromRgb(240,255,240);
+            public static Color HotPink = Color.FromRgb(255,105,180);
+            public static Color IndianRed = Color.FromRgb(205,92,92);
+            public static Color Indigo = Color.FromRgb(75,0,130);
+            public static Color Ivory = Color.FromRgb(255,255,240);
+            public static Color Khaki = Color.FromRgb(240,230,140);
+            public static Color Lavender = Color.FromRgb(230,230,250);
+            public static Color LavenderBlush = Color.FromRgb(255,240,245);
+            public static Color LawnGreen = Color.FromRgb(124,252,0);
+            public static Color LemonChiffon = Color.FromRgb(255,250,205);
+            public static Color LightBlue = Color.FromRgb(173,216,230);
+            public static Color LightCoral = Color.FromRgb(240,128,128);
+            public static Color LightCyan = Color.FromRgb(224,255,255);
+            public static Color LightGoldenRodYellow = Color.FromRgb(250,250,210);
+            public static Color LightGray = Color.FromRgb(211,211,211);
+            public static Color LightGrey = Color.FromRgb(211,211,211);
+            public static Color LightGreen = Color.FromRgb(144,238,144);
+            public static Color LightPink = Color.FromRgb(255,182,193);
+            public static Color LightSalmon = Color.FromRgb(255,160,122);
+            public static Color LightSeaGreen = Color.FromRgb(32,178,170);
+            public static Color LightSkyBlue = Color.FromRgb(135,206,250);
+            public static Color LightSlateGray = Color.FromRgb(119,136,153);
+            public static Color LightSlateGrey = Color.FromRgb(119,136,153);
+            public static Color LightSteelBlue = Color.FromRgb(176,196,222);
+            public static Color LightYellow = Color.FromRgb(255,255,224);
+            public static Color Lime = Color.FromRgb(0,255,0);
+            public static Color LimeGreen = Color.FromRgb(50,205,50);
+            public static Color Linen = Color.FromRgb(250,240,230);
+            public static Color Magenta = Color.FromRgb(255,0,255);
+            public static Color Maroon = Color.FromRgb(128,0,0);
+            public static Color MediumAquaMarine = Color.FromRgb(102,205,170);
+            public static Color MediumBlue = Color.FromRgb(0,0,205);
+            public static Color MediumOrchid = Color.FromRgb(186,85,211);
+            public static Color MediumPurple = Color.FromRgb(147,112,219);
+            public static Color MediumSeaGreen = Color.FromRgb(60,179,113);
+            public static Color MediumSlateBlue = Color.FromRgb(123,104,238);
+            public static Color MediumSpringGreen = Color.FromRgb(0,250,154);
+            public static Color MediumTurquoise = Color.FromRgb(72,209,204);
+            public static Color MediumVioletRed = Color.FromRgb(199,21,133);
+            public static Color MidnightBlue = Color.FromRgb(25,25,112);
+            public static Color MintCream = Color.FromRgb(245,255,250);
+            public static Color MistyRose = Color.FromRgb(255,228,225);
+            public static Color Moccasin = Color.FromRgb(255,228,181);
+            public static Color NavajoWhite = Color.FromRgb(255,222,173);
+            public static Color Navy = Color.FromRgb(0,0,128);
+            public static Color OldLace = Color.FromRgb(253,245,230);
+            public static Color Olive = Color.FromRgb(128,128,0);
+            public static Color OliveDrab = Color.FromRgb(107,142,35);
+            public static Color Orange = Color.FromRgb(255,165,0);
+            public static Color OrangeRed = Color.FromRgb(255,69,0);
+            public static Color Orchid = Color.FromRgb(218,112,214);
+            public static Color PaleGoldenRod = Color.FromRgb(238,232,170);
+            public static Color PaleGreen = Color.FromRgb(152,251,152);
+            public static Color PaleTurquoise = Color.FromRgb(175,238,238);
+            public static Color PaleVioletRed = Color.FromRgb(219,112,147);
+            public static Color PapayaWhip = Color.FromRgb(255,239,213);
+            public static Color PeachPuff = Color.FromRgb(255,218,185);
+            public static Color Peru = Color.FromRgb(205,133,63);
+            public static Color Pink = Color.FromRgb(255,192,203);
+            public static Color Plum = Color.FromRgb(221,160,221);
+            public static Color PowderBlue = Color.FromRgb(176,224,230);
+            public static Color Purple = Color.FromRgb(128,0,128);
+            public static Color RebeccaPurple = Color.FromRgb(102,51,153);
+            public static Color Red = Color.FromRgb(255,0,0);
+            public static Color RosyBrown = Color.FromRgb(188,143,143);
+            public static Color RoyalBlue = Color.FromRgb(65,105,225);
+            public static Color SaddleBrown = Color.FromRgb(139,69,19);
+            public static Color Salmon = Color.FromRgb(250,128,114);
+            public static Color SandyBrown = Color.FromRgb(244,164,96);
+            public static Color SeaGreen = Color.FromRgb(46,139,87);
+            public static Color SeaShell = Color.FromRgb(255,245,238);
+            public static Color Sienna = Color.FromRgb(160,82,45);
+            public static Color Silver = Color.FromRgb(192,192,192);
+            public static Color SkyBlue = Color.FromRgb(135,206,235);
+            public static Color SlateBlue = Color.FromRgb(106,90,205);
+            public static Color SlateGray = Color.FromRgb(112,128,144);
+            public static Color SlateGrey = Color.FromRgb(112,128,144);
+            public static Color Snow = Color.FromRgb(255,250,250);
+            public static Color SpringGreen = Color.FromRgb(0,255,127);
+            public static Color SteelBlue = Color.FromRgb(70,130,180);
+            public static Color Tan = Color.FromRgb(210,180,140);
+            public static Color Teal = Color.FromRgb(0,128,128);
+            public static Color Thistle = Color.FromRgb(216,191,216);
+            public static Color Tomato = Color.FromRgb(255,99,71);
+            public static Color Turquoise = Color.FromRgb(64,224,208);
+            public static Color Violet = Color.FromRgb(238,130,238);
+            public static Color Wheat = Color.FromRgb(245,222,179);
+            public static Color White = Color.FromRgb(255,255,255);
+            public static Color WhiteSmoke = Color.FromRgb(245,245,245);
+            public static Color Yellow = Color.FromRgb(255,255,0);
+            public static Color YellowGreen = Color.FromRgb(154,205,50);
         }
 
         public class Vector3D(double _X, double _Y, double _Z, double _W = 1)

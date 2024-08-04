@@ -10,4 +10,12 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="blank.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="blank.png" />
+  </ItemGroup>
+
 </Project>
